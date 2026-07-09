@@ -537,7 +537,7 @@ function daKetThuc(d){ return d.kyHienTai > d.tongSoKy || (d.kyHienTai === d.ton
 function listHTML(){
   const filter = state.thuFilter || currentMonthRange();
   const inRangeThu = (d) => (!filter.from || d>=filter.from) && (!filter.to || d<=filter.to);
-  const loaiKeys = ['ngay','tuan','thang','nam'];
+  const loaiKeys = ['ngay','tuan','thang','nam','khac'];
 
   // ===== ĐÃ THU: từ lịch sử thu lời trong khoảng đã lọc =====
   const daThuItems = [];
@@ -829,7 +829,7 @@ function tranHTML(){
   if(active.length===0){
     html += `<div class="empty"><div class="big">🤝</div><p>Chưa có vụ tràn hụi nào đang hoạt động.</p></div>`;
   } else {
-    ['ngay','tuan','thang','nam'].forEach(loaiKey=>{
+    ['ngay','tuan','thang','nam','khac'].forEach(loaiKey=>{
       const group = active.filter(t=>t.loai===loaiKey);
       if(group.length===0) return;
       html += `<h3 style="font-family:'Source Serif 4',serif;font-size:15px;margin:16px 0 8px;border-bottom:2px solid var(--rule);padding-bottom:4px;">Hụi ${loaiLabel[loaiKey]} (${group.length})</h3>`;
@@ -840,7 +840,7 @@ function tranHTML(){
 
   if(closed.length>0){
     html += `<h3 style="font-family:'Source Serif 4',serif;font-size:16px;margin:22px 0 8px;">Đã hốt xong (${closed.length})</h3>`;
-    ['ngay','tuan','thang','nam'].forEach(loaiKey=>{
+    ['ngay','tuan','thang','nam','khac'].forEach(loaiKey=>{
       const group = closed.filter(t=>t.loai===loaiKey);
       if(group.length===0) return;
       html += `<h3 style="font-family:'Source Serif 4',serif;font-size:14px;margin:14px 0 6px;color:var(--ink-soft);">Hụi ${loaiLabel[loaiKey]} (${group.length})</h3>`;
@@ -1362,12 +1362,6 @@ function tranStatsHTML(){
   let tongHoaHong = 0;
   let soVuCoHoaHong = new Set();
   hiddenAll.forEach(t=>{
-    if(t.hoaHong && inRange(t.ngayTran)){
-      const mk = monthKey(t.ngayTran);
-      hoaHongByMonth[mk] = (hoaHongByMonth[mk]||0) + t.hoaHong;
-      tongHoaHong += t.hoaHong;
-      soVuCoHoaHong.add(t.id);
-    }
     (t.lichSuLoi||[]).forEach(l=>{
       if(l.hoaHong && inRange(l.ngay)){
         const mk = monthKey(l.ngay);
@@ -1408,7 +1402,7 @@ function tranStatsHTML(){
   </div>
   <div class="stats-section">
     <h3 style="border-color:var(--heart);">Tràn hụi ẩn — Hoa hồng theo tháng</h3>
-    <div class="grp-meta">Khoản này <b>tách riêng, không cộng vào "Lời theo tháng"</b> ở trên — chỉ để xem cho biết. Cả hoa hồng ban đầu lúc tạo vụ và hoa hồng từng kỳ đều được lọc theo đúng khoảng ngày đã chọn ở trên (giống cách tính lời).</div>
+    <div class="grp-meta">Khoản này <b>tách riêng, không cộng vào "Lời theo tháng"</b> ở trên — chỉ để xem cho biết. Chỉ tính hoa hồng phát sinh từ các lần "Thu lời" (giống hệt cách tính ở trang "Thu theo ngày"), không tính hoa hồng ban đầu lúc tạo vụ.</div>
     ${hoaHongMonths.length===0 ? `<div class="grp-meta">Chưa có hoa hồng nào trong khoảng đã chọn.</div>` : `
     <div class="table-wrap"><table class="stat-table">
       <thead><tr><th>Tháng</th><th>Hoa hồng</th></tr></thead>
